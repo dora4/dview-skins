@@ -10,6 +10,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.collection.ArrayMap
 import androidx.core.view.LayoutInflaterCompat
 import androidx.core.view.LayoutInflaterFactory
+import androidx.databinding.ViewDataBinding
+import dora.BaseActivity
 import dora.skin.SkinManager
 import dora.skin.attr.SkinAttr
 import dora.skin.attr.SkinAttrSupport
@@ -21,7 +23,7 @@ import java.lang.reflect.InvocationTargetException
 import java.lang.reflect.Method
 import java.util.*
 
-abstract class BaseSkinActivity : AppCompatActivity(),
+abstract class BaseSkinActivity<T : ViewDataBinding> : BaseActivity<T>(),
     ISkinChangeListener, LayoutInflaterFactory {
 
     private val constructorArgs = arrayOfNulls<Any>(2)
