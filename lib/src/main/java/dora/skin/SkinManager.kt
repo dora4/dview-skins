@@ -38,7 +38,7 @@ object SkinManager {
         applicationContext = context.applicationContext
         val skinPluginPath = SPUtils.readString(applicationContext, SkinConfig.PREFS_PLUGIN_PATH)
         val skinPluginPkgName = SPUtils.readString(applicationContext, SkinConfig.PREFS_PLUGIN_PKG_NAME)
-        suffix = SPUtils.readString(applicationContext, SkinConfig.PREFS_PLUGIN_SUFFIX)
+        suffix = SPUtils.readString(applicationContext, SkinConfig.PREFS_PLUGIN_SUFFIX, "")
         if (TextUtils.isEmpty(skinPluginPath)) return
         if (!File(skinPluginPath).exists()) return
         try {
