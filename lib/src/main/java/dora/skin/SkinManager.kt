@@ -173,11 +173,11 @@ object SkinManager {
         }
     }
 
-    fun addChangedListener(listener: ISkinChangeListener) {
+    fun addListener(listener: ISkinChangeListener) {
         skinListeners.add(listener)
     }
 
-    fun removeChangedListener(listener: ISkinChangeListener) {
+    fun removeListener(listener: ISkinChangeListener) {
         skinListeners.remove(listener)
         skinViewMap.remove(listener)
     }

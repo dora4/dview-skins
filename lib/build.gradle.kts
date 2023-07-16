@@ -30,7 +30,7 @@ android {
 dependencies {
     implementation("androidx.core:core-ktx:1.7.0")
     implementation("androidx.appcompat:appcompat:1.6.1")
-    implementation("com.github.dora4:dora:1.1.10")
+    implementation("com.github.dora4:dora:1.1.9")
 }
 
 afterEvaluate {
@@ -40,7 +40,7 @@ afterEvaluate {
                 from(components["release"])
                 groupId = "com.github.dora4"
                 artifactId = rootProject.project.name
-                version = "1.2"
+                version = "1.3"
             }
         }
     }
