@@ -13,8 +13,13 @@ enum class SkinAttrType(var attrType: String) {
      */
     BACKGROUND("background") {
         override fun apply(view: View, resName: String) {
-            val drawable = resourceManager?.getDrawable(resName) ?: return
-            view.setBackgroundDrawable(drawable)
+            val drawable = loader.getDrawable(resName)
+            if (drawable != null) {
+                view.setBackgroundDrawable(drawable)
+            } else {
+                val color = loader.getColor(resName)
+                view.setBackgroundColor(color)
+            }
         }
     },
 
@@ -23,7 +28,7 @@ enum class SkinAttrType(var attrType: String) {
      */
     TEXT_COLOR("textColor") {
         override fun apply(view: View, resName: String) {
-            val colorStateList = resourceManager?.getColorStateList(resName) ?: return
+            val colorStateList = loader.getColorStateList(resName) ?: return
             (view as TextView).setTextColor(colorStateList)
         }
     },
@@ -34,7 +39,7 @@ enum class SkinAttrType(var attrType: String) {
     SRC("src") {
         override fun apply(view: View, resName: String) {
             if (view is ImageView) {
-                val drawable = resourceManager?.getDrawable(resName) ?: return
+                val drawable = loader.getDrawable(resName) ?: return
                 view.setImageDrawable(drawable)
             }
         }
@@ -45,6 +50,6 @@ enum class SkinAttrType(var attrType: String) {
     /**
      * 获取资源管理器。
      */
-    val resourceManager: SkinLoader?
+    val loader: SkinLoader
         get() = SkinManager.getLoader()
 }

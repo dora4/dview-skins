@@ -17,8 +17,8 @@ import dora.skin.attr.SkinAttrSupport
 import dora.skin.attr.SkinView
 import dora.skin.listener.ISkinChangeListener
 import dora.util.LogUtils
+import dora.util.ReflectionUtils
 import java.lang.reflect.Constructor
-import java.lang.reflect.InvocationTargetException
 import java.lang.reflect.Method
 import java.util.*
 
@@ -28,32 +28,19 @@ abstract class BaseSkinActivity<T : ViewDataBinding> : BaseActivity<T>(),
     private val constructorArgs = arrayOfNulls<Any>(2)
 
     override fun onCreateView(parent: View?, name: String, context: Context, attrs: AttributeSet): View? {
-        val delegate = delegate
-        var view: View? = null
-        try {
-            // public View createView
-            // (View parent, final String name, @NonNull Context context, @NonNull AttributeSet attrs)
-            if (createViewMethod == null) {
-                val methodOnCreateView = delegate.javaClass.getMethod("createView", *createViewSignature)
-                createViewMethod = methodOnCreateView
-            }
-            val obj = createViewMethod!!.invoke(delegate, parent, name, context, attrs)
-            if (obj != null) {
-                view = obj as View
-            }
-        } catch (e: NoSuchMethodException) {
-            LogUtils.e(e.toString())
-        } catch (e: InvocationTargetException) {
-            LogUtils.e(e.toString())
-        } catch (e: IllegalAccessException) {
-            LogUtils.e(e.toString())
+        if (createViewMethod == null) {
+            val methodOnCreateView = ReflectionUtils.findMethod(delegate.javaClass, false,
+                "createView", *createViewSignature)
+            createViewMethod = methodOnCreateView
+        }
+        var view: View? = ReflectionUtils.invokeMethod(delegate, createViewMethod, parent, name,
+            context, attrs) as View?
+        if (view == null) {
+            view = createViewFromTag(context, name, attrs)
         }
         val skinAttrList = SkinAttrSupport.getSkinAttrs(attrs, context)
         if (skinAttrList.isEmpty()) {
             return view
-        }
-        if (view == null) {
-            view = createViewFromTag(context, name, attrs)
         }
         injectSkin(view, skinAttrList)
         return view
@@ -61,9 +48,12 @@ abstract class BaseSkinActivity<T : ViewDataBinding> : BaseActivity<T>(),
 
     private fun injectSkin(view: View?, skinAttrList: MutableList<SkinAttr>) {
         if (skinAttrList.isNotEmpty()) {
-            val skinViews = SkinManager.getSkinViews(this)
-            SkinManager.addSkinView(this, skinViews)
+            var skinViews = SkinManager.getSkinViews(this)
+            if (skinViews == null) {
+                skinViews = arrayListOf()
+            }
             skinViews.add(SkinView(view, skinAttrList))
+            SkinManager.addSkinView(this, skinViews)
             if (SkinManager.needChangeSkin()) {
                 SkinManager.apply(this)
             }
@@ -131,7 +121,7 @@ abstract class BaseSkinActivity<T : ViewDataBinding> : BaseActivity<T>(),
 
     companion object {
         val constructorSignature = arrayOf(Context::class.java, AttributeSet::class.java)
-        private val constructorMap: MutableMap<String, Constructor<out View>?> = ArrayMap()
+        private val constructorMap: MutableMap<String, Constructor<out View>> = ArrayMap()
         private var createViewMethod: Method? = null
         val createViewSignature = arrayOf(View::class.java, String::class.java,
                 Context::class.java, AttributeSet::class.java)

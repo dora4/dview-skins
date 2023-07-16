@@ -31,7 +31,7 @@ object SkinManager {
     private var suffix: String = ""
     private var curPluginPath: String? = null
     private var curPluginPkgName: String? = null
-    private val skinViewMap: MutableMap<ISkinChangeListener, MutableList<SkinView>> = HashMap()
+    private val skinViewMap: MutableMap<ISkinChangeListener, MutableList<SkinView>?> = HashMap()
     private val skinListeners: MutableList<ISkinChangeListener> = ArrayList()
 
     fun init(context: Context) {
@@ -87,9 +87,8 @@ object SkinManager {
 
     fun getLoader(): SkinLoader {
         if (!applyPlugin || skinLoader == null) {
-            // 没有应用皮肤插件就创建一个ResourceManager
+            // 没有应用皮肤插件就创建一个SkinLoader
             skinLoader = SkinLoader(applicationContext.resources, applicationContext.packageName, suffix)
-            applyPlugin = true
         }
         return skinLoader!!
     }
@@ -119,6 +118,7 @@ object SkinManager {
     fun changeSkin(suffix: String) {
         clearPluginInfo()
         this.suffix = suffix
+        getLoader().setSuffix(suffix)
         SPUtils.writeString(applicationContext, SkinConfig.PREFS_PLUGIN_SUFFIX, suffix)
         notifyListeners()
     }
@@ -158,18 +158,20 @@ object SkinManager {
         })
     }
 
-    fun addSkinView(listener: ISkinChangeListener, skinViews: MutableList<SkinView>) {
+    fun addSkinView(listener: ISkinChangeListener, skinViews: MutableList<SkinView>?) {
         skinViewMap[listener] = skinViews
     }
 
-    fun getSkinViews(listener: ISkinChangeListener): MutableList<SkinView> {
-        return skinViewMap[listener]!!
+    fun getSkinViews(listener: ISkinChangeListener): MutableList<SkinView>? {
+        return skinViewMap[listener]
     }
 
     fun apply(listener: ISkinChangeListener) {
         val skinViews = getSkinViews(listener)
-        for (skinView in skinViews) {
-            skinView.apply()
+        skinViews?.let {
+            for (skinView in it) {
+                skinView.apply()
+            }
         }
     }
 

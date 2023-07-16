@@ -3,6 +3,7 @@ package dora.skin.attr
 import android.content.Context
 import android.util.AttributeSet
 import dora.skin.SkinConfig
+import dora.util.TextUtils
 import java.util.ArrayList
 
 /**
@@ -21,7 +22,12 @@ object SkinAttrSupport {
             val attrValue = attrs.getAttributeValue(i)
             val attrType = getSupportAttrType(attrName) ?: continue
             if (attrValue.startsWith("@")) {
-                val id = attrValue.substring(1).toInt()
+                val ref = attrValue.substring(1)
+                if (TextUtils.isEqualTo(ref, "null")) {
+                    // 跳过@null
+                    continue
+                }
+                val id = ref.toInt()
                 // 获取资源id的实体名称
                 val entryName = context.resources.getResourceEntryName(id)
                 if (entryName.startsWith(SkinConfig.ATTR_PREFIX)) {

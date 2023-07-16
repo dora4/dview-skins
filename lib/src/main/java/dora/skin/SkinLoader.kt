@@ -9,10 +9,19 @@ import android.graphics.drawable.Drawable
 import android.text.TextUtils
 import android.view.View
 import android.widget.ImageView
+import dora.util.LogUtils
 
 class SkinLoader(
+
     private val resources: Resources, private val pluginPkgName: String, private
-        val suffix: String? = "") : ISkinLoader {
+        var suffix: String? = "") : ISkinLoader {
+
+    /**
+     * 如果你需要改变suffix，你应该调用SkinManager的changeSkin。
+     */
+    internal fun setSuffix(suffix: String? = "") {
+        this.suffix = suffix
+    }
 
     fun getBitmap(resName: String): Bitmap? {
         return BitmapFactory.decodeResource(
@@ -35,7 +44,7 @@ class SkinLoader(
                 )
             )
         } catch (e: NotFoundException) {
-            e.printStackTrace()
+            LogUtils.e(e.toString())
             null
         }
     }
@@ -44,7 +53,7 @@ class SkinLoader(
         return try {
             resources.getColor(resources.getIdentifier(appendSuffix(resName), DEF_TYPE_COLOR, pluginPkgName))
         } catch (e: NotFoundException) {
-            e.printStackTrace()
+            LogUtils.e(e.toString())
             -1
         }
     }
@@ -59,7 +68,7 @@ class SkinLoader(
                 )
             )
         } catch (e: NotFoundException) {
-            e.printStackTrace()
+            LogUtils.e(e.toString())
             null
         }
     }
@@ -70,6 +79,7 @@ class SkinLoader(
     private fun appendSuffix(name: String): String {
         var nameWithSuffix = name
         if (!TextUtils.isEmpty(suffix)) nameWithSuffix += "_$suffix"
+        LogUtils.i("SkinLoader appendSuffix:$suffix, result=$nameWithSuffix")
         return nameWithSuffix
     }
 
@@ -81,6 +91,11 @@ class SkinLoader(
     override fun setBackgroundDrawable(view: View, resName: String) {
         val drawable = getDrawable(resName) ?: return
         view.background = drawable
+    }
+
+    override fun setBackgroundColor(view: View, resName: String) {
+        val color = getColor(resName)
+        view.setBackgroundColor(color)
     }
 
     companion object {

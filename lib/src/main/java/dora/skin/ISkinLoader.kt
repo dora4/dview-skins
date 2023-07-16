@@ -17,4 +17,9 @@ interface ISkinLoader {
      * @see View.setBackgroundDrawable
      */
     fun setBackgroundDrawable(view: View, resName: String)
+
+    /**
+     * @see View.setBackgroundColor
+     */
+    fun setBackgroundColor(view: View, resName: String)
 }
