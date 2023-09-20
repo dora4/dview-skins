@@ -16,7 +16,6 @@ import dora.skin.attr.SkinAttr
 import dora.skin.attr.SkinAttrSupport
 import dora.skin.attr.SkinView
 import dora.skin.listener.ISkinChangeListener
-import dora.util.LogUtils
 import dora.util.ReflectionUtils
 import java.lang.reflect.Constructor
 import java.lang.reflect.Method
