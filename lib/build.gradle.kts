@@ -2,15 +2,11 @@ plugins {
     id("com.android.library")
     id("kotlin-android")
     id("maven-publish")
-    id("kotlin-kapt")
 }
 
 android {
     namespace = "dora.skin"
     compileSdk = 34
-    kapt {
-        generateStubs = true
-    }
     defaultConfig {
         minSdk = 21
         targetSdk = 34
@@ -20,9 +16,6 @@ android {
             isMinifyEnabled = false
             proguardFiles(getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro")
         }
-    }
-    buildFeatures {
-        dataBinding = true
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_19
@@ -42,7 +35,7 @@ afterEvaluate {
                 from(components["release"])
                 groupId = "com.github.dora4"
                 artifactId = rootProject.project.name
-                version = "1.6"
+                version = "1.7"
             }
         }
     }
