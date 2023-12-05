@@ -25,7 +25,7 @@ android {
 
 dependencies {
     implementation("androidx.appcompat:appcompat:1.6.1")
-    implementation("com.github.dora4:dora:1.1.28")
+    implementation("com.github.dora4:dora:1.1.46")
 }
 
 afterEvaluate {
@@ -35,7 +35,7 @@ afterEvaluate {
                 from(components["release"])
                 groupId = "com.github.dora4"
                 artifactId = rootProject.project.name
-                version = "1.7"
+                version = "1.8"
             }
         }
     }

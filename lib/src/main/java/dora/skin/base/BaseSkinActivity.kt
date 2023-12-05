@@ -20,6 +20,9 @@ import java.lang.reflect.Constructor
 import java.lang.reflect.Method
 import java.util.*
 
+/**
+ * 请参考这个类实现BaseActivity。
+ */
 abstract class BaseSkinActivity : AppCompatActivity(),
     ISkinChangeListener, LayoutInflaterFactory {
 
