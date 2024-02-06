@@ -25,7 +25,7 @@ android {
 
 dependencies {
     implementation("androidx.appcompat:appcompat:1.6.1")
-    implementation("com.github.dora4:dora:1.1.46")
+    implementation("com.github.dora4:dora:1.1.56")
 }
 
 afterEvaluate {
