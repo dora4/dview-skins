@@ -2,6 +2,10 @@ dview-skins
 ![Release](https://jitpack.io/v/dora4/dview-skins.svg)
 --------------------------------
 
+#### 卡片
+
+![Dora视图_皮肤自由](https://github.com/user-attachments/assets/6f13ae4f-04ea-4f32-9740-372637261046)
+
 #### Gradle依赖配置
 
 ```groovy
