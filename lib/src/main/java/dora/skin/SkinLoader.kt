@@ -9,6 +9,7 @@ import android.graphics.drawable.Drawable
 import android.text.TextUtils
 import android.view.View
 import android.widget.ImageView
+import androidx.core.content.ContextCompat
 import dora.util.LogUtils
 
 class SkinLoader(
@@ -88,12 +89,39 @@ class SkinLoader(
         imageView.setImageDrawable(drawable)
     }
 
+    override fun setImageDrawable(imageView: ImageView, resName: String?, fallback: Int) {
+        if (resName == null) {
+            imageView.setImageDrawable(ContextCompat.getDrawable(imageView.context, fallback))
+            return
+        }
+        val drawable = getDrawable(resName) ?: return
+        imageView.setImageDrawable(drawable)
+    }
+
     override fun setBackgroundDrawable(view: View, resName: String) {
         val drawable = getDrawable(resName) ?: return
         view.background = drawable
     }
 
+    override fun setBackgroundDrawable(view: View, resName: String?, fallback: Int) {
+        if (resName == null) {
+            view.background = ContextCompat.getDrawable(view.context, fallback)
+            return
+        }
+        val drawable = getDrawable(resName) ?: return
+        view.background = drawable
+    }
+
     override fun setBackgroundColor(view: View, resName: String) {
+        val color = getColor(resName)
+        view.setBackgroundColor(color)
+    }
+
+    override fun setBackgroundColor(view: View, resName: String?, fallback: Int) {
+        if (resName == null) {
+            view.setBackgroundColor(fallback)
+            return
+        }
         val color = getColor(resName)
         view.setBackgroundColor(color)
     }
