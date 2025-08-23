@@ -17,6 +17,9 @@ android {
             proguardFiles(getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro")
         }
     }
+    buildFeatures {
+        viewBinding = true
+    }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
@@ -25,7 +28,7 @@ android {
 
 dependencies {
     implementation("androidx.appcompat:appcompat:1.6.1")
-    implementation("com.github.dora4:dora:1.1.56")
+    implementation("com.github.dora4:dora:1.3.14")
 }
 
 afterEvaluate {
@@ -35,7 +38,7 @@ afterEvaluate {
                 from(components["release"])
                 groupId = "com.github.dora4"
                 artifactId = rootProject.project.name
-                version = "1.10"
+                version = "1.11"
             }
         }
     }

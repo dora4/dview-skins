@@ -2,14 +2,15 @@ package dora.skin.base
 
 import android.content.Context
 import android.os.Bundle
+import android.util.ArrayMap
 import android.util.AttributeSet
 import android.view.InflateException
 import android.view.LayoutInflater
+import android.view.LayoutInflater.Factory2
 import android.view.View
-import androidx.appcompat.app.AppCompatActivity
-import androidx.collection.ArrayMap
 import androidx.core.view.LayoutInflaterCompat
-import androidx.core.view.LayoutInflaterFactory
+import androidx.databinding.ViewDataBinding
+import dora.BaseActivity
 import dora.skin.SkinManager
 import dora.skin.attr.SkinAttr
 import dora.skin.attr.SkinAttrSupport
@@ -18,25 +19,34 @@ import dora.skin.listener.ISkinChangeListener
 import dora.util.ReflectionUtils
 import java.lang.reflect.Constructor
 import java.lang.reflect.Method
-import java.util.*
 
-/**
- * 请参考这个类实现BaseActivity。
- */
-@Deprecated("请使用BaseSkinBindingActivity替代")
-abstract class BaseSkinActivity : AppCompatActivity(),
-    ISkinChangeListener, LayoutInflaterFactory {
+abstract class BaseSkinBindingActivity<T : ViewDataBinding> : BaseActivity<T>(),
+    ISkinChangeListener, Factory2 {
 
     private val constructorArgs = arrayOfNulls<Any>(2)
 
-    override fun onCreateView(parent: View?, name: String, context: Context, attrs: AttributeSet): View? {
+    override fun onCreateView(name: String, context: Context, attrs: AttributeSet): View? {
+        // Factory2 必须实现的两个重载，转调到四参版本，确保两条创建路径都被拦截
+        return onCreateView(null, name, context, attrs)
+    }
+
+    override fun onCreateView(
+        parent: View?,
+        name: String,
+        context: Context,
+        attrs: AttributeSet
+    ): View? {
         if (createViewMethod == null) {
-            val methodOnCreateView = ReflectionUtils.findMethod(delegate.javaClass, false,
-                "createView", *createViewSignature)
+            val methodOnCreateView = ReflectionUtils.findMethod(
+                delegate.javaClass, false,
+                "createView", *createViewSignature
+            )
             createViewMethod = methodOnCreateView
         }
-        var view: View? = ReflectionUtils.invokeMethod(delegate, createViewMethod, parent, name,
-            context, attrs) as View?
+        var view: View? = ReflectionUtils.invokeMethod(
+            delegate, createViewMethod, parent, name,
+            context, attrs
+        ) as View?
         if (view == null) {
             view = createViewFromTag(context, name, attrs)
         }
@@ -70,9 +80,11 @@ abstract class BaseSkinActivity : AppCompatActivity(),
         return try {
             constructorArgs[0] = context
             constructorArgs[1] = attrs
-            if (-1 == name.indexOf('.')) {
-                // try the android.widget prefix first...
+            if (name.indexOf('.') == -1) {
+                // 多前缀尝试，命中率更高
                 createView(context, name, "android.widget.")
+                    ?: createView(context, name, "android.view.")
+                    ?: createView(context, name, "android.webkit.")
             } else {
                 createView(context, name, null)
             }
@@ -93,7 +105,8 @@ abstract class BaseSkinActivity : AppCompatActivity(),
             if (constructor == null) {
                 // Class not found in the cache, see if it's real, and try to add it
                 val clazz = context.classLoader.loadClass(
-                        if (prefix != null) prefix + name else name).asSubclass(View::class.java)
+                    if (prefix != null) prefix + name else name
+                ).asSubclass(View::class.java)
                 constructor = clazz.getConstructor(*constructorSignature)
                 constructorMap[name] = constructor
             }
@@ -107,7 +120,7 @@ abstract class BaseSkinActivity : AppCompatActivity(),
 
     override fun onCreate(savedInstanceState: Bundle?) {
         val layoutInflater = LayoutInflater.from(this)
-        LayoutInflaterCompat.setFactory(layoutInflater, this)
+        LayoutInflaterCompat.setFactory2(layoutInflater, this)
         super.onCreate(savedInstanceState)
         SkinManager.addListener(this)
     }
@@ -125,7 +138,9 @@ abstract class BaseSkinActivity : AppCompatActivity(),
         val constructorSignature = arrayOf(Context::class.java, AttributeSet::class.java)
         private val constructorMap: MutableMap<String, Constructor<out View>> = ArrayMap()
         private var createViewMethod: Method? = null
-        val createViewSignature = arrayOf(View::class.java, String::class.java,
-                Context::class.java, AttributeSet::class.java)
+        val createViewSignature = arrayOf(
+            View::class.java, String::class.java,
+            Context::class.java, AttributeSet::class.java
+        )
     }
 }
