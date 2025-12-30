@@ -6,10 +6,9 @@ plugins {
 
 android {
     namespace = "dora.skin"
-    compileSdk = 34
+    compileSdk = 36
     defaultConfig {
         minSdk = 21
-        targetSdk = 34
     }
     buildTypes {
         release {
@@ -28,7 +27,7 @@ android {
 
 dependencies {
     implementation("androidx.appcompat:appcompat:1.6.1")
-    implementation("com.github.dora4:dora:1.3.14")
+    implementation("com.github.dora4:dora:1.3.53")
 }
 
 afterEvaluate {
