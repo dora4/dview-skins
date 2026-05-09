@@ -16,8 +16,8 @@ allprojects {
 }
 // 添加以下代码到app模块的build.gradle
 dependencies {
-    implementation 'com.github.dora4:dora:1.3.53'
-    implementation 'com.github.dora4:dview-skins:1.11'
+    implementation 'com.github.dora4:dora:1.3.68'
+    implementation 'com.github.dora4:dview-skins:1.13'
 }
 ```
 

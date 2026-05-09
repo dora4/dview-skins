@@ -16,24 +16,31 @@ object SkinAttrSupport {
      */
     fun getSkinAttrs(attrs: AttributeSet, context: Context): MutableList<SkinAttr> {
         val skinAttrs: MutableList<SkinAttr> = ArrayList()
-        var skinAttr: SkinAttr
         for (i in 0 until attrs.attributeCount) {
             val attrName = attrs.getAttributeName(i)
             val attrValue = attrs.getAttributeValue(i)
             val attrType = getSupportAttrType(attrName) ?: continue
-            if (attrValue.startsWith("@")) {
-                val ref = attrValue.substring(1)
-                if (TextUtils.isEqualTo(ref, "null")) {
-                    // 跳过@null
-                    continue
-                }
-                val id = ref.toInt()
-                // 获取资源id的实体名称
-                val entryName = context.resources.getResourceEntryName(id)
-                if (entryName.startsWith(SkinConfig.ATTR_PREFIX)) {
-                    skinAttr = SkinAttr(attrType, entryName)
-                    skinAttrs.add(skinAttr)
-                }
+            // 必须是资源引用
+            if (!attrValue.startsWith("@")) {
+                continue
+            }
+            // 跳过 @null
+            if (attrValue == "@null") {
+                continue
+            }
+            // 防御非法值
+            val ref = attrValue.substring(1)
+            val id = ref.toIntOrNull() ?: continue
+            // 跳过无效资源
+            if (id == 0) {
+                continue
+            }
+            // 安全获取资源名
+            val entryName = runCatching {
+                context.resources.getResourceEntryName(id)
+            }.getOrNull() ?: continue
+            if (entryName.startsWith(SkinConfig.ATTR_PREFIX)) {
+                skinAttrs.add(SkinAttr(attrType, entryName))
             }
         }
         return skinAttrs
